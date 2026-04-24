@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+/* 自定義主題變數設定 */
+@theme {
+  --font-sans: 'Inter', sans-serif;
+  --color-brand-blue: #0A192F; /* 專業深藍 */
+  --color-brand-accent: #64FFDA; /* 高對比科技感點綴色 */
+  --color-brand-light: #F8FAFC;
+}
