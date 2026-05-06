@@ -8,12 +8,12 @@ import ContactCTA from './components/ContactCTA';
 import PlaceholderPage from './pages/PlaceholderPage';
 import Benefits from './pages/Benefits';
 import CompanyProfile from './pages/CompanyProfile';
-import ImagingTest from './pages/ImagingTest';
 import { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 // 加入這兩行
 import { HelmetProvider } from 'react-helmet-async';
 import SEO from './components/SEO';
+import { accessoryProducts, productCategories } from './data/microphoneProducts';
 
 // (SearchIcon 和 MenuIcon 保持不變，放在 Navbar 外面)
 const SearchIcon = ({ isSolid }) => (
@@ -22,15 +22,31 @@ const SearchIcon = ({ isSolid }) => (
   </svg>
 );
 
-const MenuIcon = ({ isOpen, isSolid }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" className={`h-6 w-6 transition-colors ${isOpen ? 'text-white' : (isSolid ? 'text-brand-blue' : 'text-white')}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    {isOpen ? (
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-    ) : (
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-    )}
-  </svg>
-);
+const microphoneSearchKeywords = [
+  ...new Set([
+    ...productCategories.flatMap((category) => [
+      category.title,
+      ...category.products.flatMap((product) => [
+        product.model,
+        product.microphoneType,
+        product.connectorType,
+        ...product.softwareFunctions,
+      ]),
+    ]),
+    ...accessoryProducts.flatMap((accessory) => [accessory.model, accessory.type]),
+    'ACH',
+    'AMT',
+    'test chamber',
+    'shielding box',
+    'PDM',
+    'I2S',
+    'Analog',
+    'Digital',
+    'CMT-5800',
+    'CMT-5810',
+    'MT-5338',
+  ]),
+];
 
 function Navbar() {
   const [activeMenu, setActiveMenu] = useState(null);
@@ -40,8 +56,6 @@ function Navbar() {
   
   // 🚀 新增：儲存使用者輸入的搜尋字串
   const [searchQuery, setSearchQuery] = useState(''); 
-  const location = useLocation();
-
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
@@ -55,10 +69,6 @@ function Navbar() {
     setIsSearchOpen(false);
     setSearchQuery(''); // 關閉時清空搜尋字串
   };
-
-  useEffect(() => {
-    closeAllMenus();
-  }, [location.pathname]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -97,6 +107,7 @@ function Navbar() {
   // 🚀 建立搜尋資料庫：包含標題、敘述與隱藏的觸發關鍵字
   const searchDatabase = [
     { id: 1, title: '聲學與音訊測試', category: '產品與服務', path: '/products/acoustics', desc: '數位與類比聲音訊號的頂尖測試解決方案。', keywords: ['麥克風', '聲音', '音訊', '聲學', '訊號', 'audio', '單體', 'fpc', '耳機', '喇叭'] },
+    { id: 5, title: '麥克風測試產品系列', category: '產品與服務', path: '/products/acoustics', desc: 'CMT、LMT、MT 系列麥克風測試系統，以及 ACH 測試箱體與 AMT 屏蔽箱。', keywords: microphoneSearchKeywords },
     { id: 2, title: '企業簡介', category: '關於我們', path: '/about/company', desc: '宏相科技成立於 2005 年，提供全方位的開發能力與高標準測試。', keywords: ['關於我們', '企業簡介', '歷史', '理念', '宏相科技', 'hxt', '昆山', '介紹'] },
     { id: 3, title: '公司福利', category: '人才招募', path: '/careers/benefits', desc: '提供優於業界的福利與彈性工時，重視每一位團隊夥伴。', keywords: ['福利', '薪資', '薪酬', '招募', '加入', '假勤', '健康檢查', '零食', 'careers'] },
     { id: 4, title: '加入 HXT', category: '人才招募', path: '/careers/join', desc: '探索目前的熱門職缺，與頂尖團隊一起成長。', keywords: ['職缺', '工作', '應徵', '面試', '工程師'] },
@@ -262,8 +273,8 @@ function Navbar() {
                 <div>
                   <h4 className="text-xs font-bold text-slate-400 mb-6 tracking-widest uppercase">熱門搜尋</h4>
                   <ul className="space-y-4">
-                    <li><Link to="/products/imaging" onClick={closeAllMenus} className="text-xl font-semibold text-slate-600 hover:text-brand-blue transition-colors flex items-center gap-2"><span className="text-brand-blue">↗</span> CMOS 影像測試</Link></li>
-                    <li><Link to="/products/automation" onClick={closeAllMenus} className="text-xl font-semibold text-slate-600 hover:text-brand-blue transition-colors flex items-center gap-2"><span className="text-brand-blue">↗</span> 機器視覺整合</Link></li>
+                    <li><Link to="/products/acoustics" onClick={closeAllMenus} className="text-xl font-semibold text-slate-600 hover:text-brand-blue transition-colors flex items-center gap-2"><span className="text-brand-blue">↗</span> CMT 麥克風測試系統</Link></li>
+                    <li><Link to="/products/acoustics" onClick={closeAllMenus} className="text-xl font-semibold text-slate-600 hover:text-brand-blue transition-colors flex items-center gap-2"><span className="text-brand-blue">↗</span> ACH / AMT 測試箱體</Link></li>
                     <li><Link to="/careers/join" onClick={closeAllMenus} className="text-xl font-semibold text-slate-600 hover:text-brand-blue transition-colors flex items-center gap-2"><span className="text-brand-blue">↗</span> 2026 最新職缺</Link></li>
                   </ul>
                 </div>

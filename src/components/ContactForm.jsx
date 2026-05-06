@@ -19,9 +19,10 @@ export default function ContactForm() {
     try {
       // 預留：EmailJS 或 Formspree API 串接邏輯
       // await fetch('YOUR_API_ENDPOINT', { method: 'POST', body: JSON.stringify(safeData) });
+      await Promise.resolve(safeData);
       
       setTimeout(() => setStatus('success'), 1000); // 模擬 API 請求
-    } catch (error) {
+    } catch {
       setStatus('error');
     }
   };
