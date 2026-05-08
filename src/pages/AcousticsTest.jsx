@@ -1,16 +1,81 @@
 // src/pages/AcousticsTest.jsx
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import SEO from '../components/SEO';
 import { accessoryProducts, productCategories } from '../data/microphoneProducts';
 
-const formatText = (value) => value.split('\n').filter(Boolean).join(' / ');
+const formatText = (value = '') => value.split('\n').filter(Boolean).join(' / ');
 
-function ProductCard({ product }) {
-  const primaryFunctions = product.softwareFunctions.slice(0, 4);
+const categoryConfig = [
+  {
+    id: 'best',
+    label: 'Best Accuracy',
+    description: '最高精度的單站麥克風測試配置，適合高要求的研發與品質驗證。',
+    match: (title) => title.startsWith('Best accuracy'),
+  },
+  {
+    id: 'good',
+    label: 'Good Accuracy',
+    description: '兼顧精度與彈性的主力測試系列，支援 digital、analog 與多種介面配置。',
+    match: (title) => title.startsWith('Good accuracy'),
+  },
+  {
+    id: 'cost',
+    label: 'Cost Competitive',
+    description: '面向量產與成本敏感應用的高效率方案，包含內建音源與基本測試配置。',
+    match: (title) => title.startsWith('Cost Competitive'),
+  },
+  {
+    id: 'multi',
+    label: 'Multi-Site',
+    description: '支援多站、多通道麥克風測試，適合大批量與多模組測試情境。',
+    match: (title) => title.startsWith('Multi-Site'),
+  },
+];
+
+const productGroups = [
+  ...categoryConfig.map((config) => ({
+    ...config,
+    products: productCategories
+      .filter((category) => config.match(category.title))
+      .flatMap((category) =>
+        category.products.map((product) => ({
+          ...product,
+          sourceCategory: category.title,
+          itemType: 'product',
+        })),
+      ),
+  })),
+  {
+    id: 'accessories',
+    label: 'Accessories',
+    description: '測試箱體、音源與屏蔽箱，搭配麥克風測試系統完成使用情境整合。',
+    products: accessoryProducts.map((accessory) => ({
+      ...accessory,
+      itemType: 'accessory',
+      sourceCategory: accessory.type,
+      microphoneType: accessory.type,
+      maxTestSite: accessory.description,
+      softwareFunctions: [accessory.type],
+    })),
+  },
+];
+
+const specRows = [
+  ['接頭種類', 'connectorType'],
+  ['支援麥克風類型', 'microphoneType'],
+  ['最大測試站數', 'maxTestSite'],
+  ['治具', 'fixture'],
+  ['測試箱體', 'testChamber'],
+  ['屏蔽箱', 'shieldingBox'],
+  ['校正方式', 'calibrationType'],
+];
+
+function ProductCard({ product, onSelect }) {
+  const primaryFunctions = product.softwareFunctions.slice(0, 3);
 
   return (
-    <article className="bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-1 border border-slate-100 overflow-hidden transition-all duration-300 flex flex-col">
+    <article className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-1 border border-slate-100 overflow-hidden transition-all duration-200 flex flex-col min-h-[520px]">
       <div className="aspect-[4/3] bg-slate-50 border-b border-slate-100 overflow-hidden">
         <img
           src={product.image}
@@ -21,30 +86,29 @@ function ProductCard({ product }) {
       </div>
 
       <div className="p-6 flex flex-col flex-1">
-        <div className="text-xs font-bold text-brand-blue tracking-widest uppercase mb-3">
-          Microphone Test Solution
+        <div className="min-h-[34px] mb-4">
+          <span className="inline-flex max-w-full px-3 py-1 rounded-full bg-slate-50 text-brand-blue text-xs font-bold border border-slate-100">
+            <span className="truncate">{product.sourceCategory}</span>
+          </span>
         </div>
-        <h3 className="text-2xl font-black text-slate-900 mb-3">{product.model}</h3>
-        <p className="text-sm text-slate-600 leading-relaxed whitespace-pre-line mb-5">
-          {product.description}
-        </p>
+        <h3 className="text-2xl font-black text-slate-900 mb-4 leading-tight">{product.model}</h3>
 
-        <dl className="space-y-4 text-sm mb-6">
+        <dl className="space-y-4 text-sm mb-5">
           <div>
-            <dt className="font-bold text-slate-900 mb-1">支援麥克風類型</dt>
-            <dd className="text-slate-600 whitespace-pre-line">{product.microphoneType}</dd>
+            <dt className="font-bold text-slate-900 mb-1">支援類型</dt>
+            <dd className="text-slate-600 leading-relaxed whitespace-pre-line max-h-12 overflow-hidden">
+              {product.microphoneType}
+            </dd>
           </div>
           <div>
-            <dt className="font-bold text-slate-900 mb-1">最大測試站數</dt>
-            <dd className="text-slate-600 whitespace-pre-line">{product.maxTestSite}</dd>
-          </div>
-          <div>
-            <dt className="font-bold text-slate-900 mb-1">接頭種類</dt>
-            <dd className="text-slate-600">{formatText(product.connectorType)}</dd>
+            <dt className="font-bold text-slate-900 mb-1">測試站數</dt>
+            <dd className="text-slate-600 leading-relaxed whitespace-pre-line max-h-[72px] overflow-hidden">
+              {product.maxTestSite}
+            </dd>
           </div>
         </dl>
 
-        <div className="flex flex-wrap gap-2 mb-6">
+        <div className="flex flex-wrap gap-2 mb-6 min-h-[64px] content-start">
           {primaryFunctions.map((item) => (
             <span key={item} className="px-3 py-1 rounded-full bg-slate-50 text-slate-600 text-xs font-semibold border border-slate-100">
               {item}
@@ -52,52 +116,132 @@ function ProductCard({ product }) {
           ))}
         </div>
 
-        <a
-          href={`mailto:contact@hxt-tech.com?subject=${encodeURIComponent(`詢問 ${product.model}`)}`}
-          className="mt-auto inline-flex items-center justify-center text-white bg-brand-blue px-5 py-3 rounded-full font-semibold hover:bg-brand-blue/90 hover:shadow-lg hover:shadow-brand-blue/20 transition-all"
-        >
-          聯絡詢價
-          <span className="ml-2">→</span>
-        </a>
+        <div className="mt-auto grid grid-cols-2 gap-3">
+          <button
+            type="button"
+            onClick={() => onSelect(product)}
+            className="inline-flex items-center justify-center border border-slate-200 text-slate-700 bg-white px-4 py-3 rounded-full font-semibold hover:border-brand-blue/30 hover:text-brand-blue hover:bg-slate-50 transition-all"
+          >
+            查看規格
+          </button>
+          <a
+            href={`mailto:contact@hxt-tech.com?subject=${encodeURIComponent(`詢問 ${product.model}`)}`}
+            className="inline-flex items-center justify-center text-white bg-brand-blue px-4 py-3 rounded-full font-semibold hover:bg-brand-blue/90 hover:shadow-lg hover:shadow-brand-blue/20 transition-all"
+          >
+            聯絡詢價
+          </a>
+        </div>
       </div>
     </article>
   );
 }
 
-function AccessoryCard({ accessory }) {
+function SpecModal({ product, onClose }) {
+  useEffect(() => {
+    if (!product) return undefined;
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') onClose();
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose, product]);
+
+  if (!product) return null;
+
+  const isAccessory = product.itemType === 'accessory';
+
   return (
-    <article className="bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-1 border border-slate-100 overflow-hidden transition-all duration-300 flex flex-col">
-      <div className="aspect-[4/3] bg-slate-50 border-b border-slate-100 overflow-hidden">
-        <img
-          src={accessory.image}
-          alt={accessory.model}
-          className="w-full h-full object-contain p-6"
-          loading="lazy"
-        />
+    <div className="fixed inset-0 z-50 bg-slate-950/50 backdrop-blur-sm md:p-6" role="dialog" aria-modal="true" aria-label={`${product.model} 規格`}>
+      <button
+        type="button"
+        aria-label="關閉規格視窗"
+        className="absolute inset-0 w-full h-full cursor-default"
+        onClick={onClose}
+      />
+
+      <div className="relative bg-white w-full h-full md:max-w-6xl md:max-h-[86vh] md:rounded-3xl md:shadow-2xl md:mx-auto md:mt-10 overflow-hidden flex flex-col">
+        <div className="flex items-center justify-between gap-4 px-6 py-5 border-b border-slate-100">
+          <div>
+            <div className="text-xs font-bold text-brand-blue tracking-widest uppercase mb-1">
+              {product.sourceCategory}
+            </div>
+            <h3 className="text-2xl md:text-3xl font-black text-slate-900">{product.model}</h3>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="w-11 h-11 rounded-full border border-slate-200 text-slate-500 hover:text-brand-blue hover:border-brand-blue/30 hover:bg-slate-50 transition-colors flex items-center justify-center text-xl"
+            aria-label="關閉"
+          >
+            ×
+          </button>
+        </div>
+
+        <div className="overflow-y-auto p-6 md:p-8">
+          <div className="grid lg:grid-cols-[0.9fr_1.1fr] gap-8">
+            <div>
+              <div className="aspect-[4/3] rounded-2xl bg-slate-50 border border-slate-100 overflow-hidden mb-5">
+                <img src={product.image} alt={product.model} className="w-full h-full object-contain p-8" />
+              </div>
+              <p className="text-slate-600 leading-relaxed whitespace-pre-line">
+                {product.description}
+              </p>
+            </div>
+
+            <div>
+              <dl className="grid gap-4">
+                {isAccessory ? (
+                  <div className="rounded-2xl border border-slate-100 bg-slate-50 p-5">
+                    <dt className="text-sm font-bold text-slate-900 mb-2">類型</dt>
+                    <dd className="text-slate-600 leading-relaxed">{product.type}</dd>
+                  </div>
+                ) : (
+                  specRows.map(([label, key]) => (
+                    <div key={key} className="rounded-2xl border border-slate-100 bg-slate-50 p-5">
+                      <dt className="text-sm font-bold text-slate-900 mb-2">{label}</dt>
+                      <dd className="text-slate-600 leading-relaxed whitespace-pre-line">
+                        {formatText(product[key])}
+                      </dd>
+                    </div>
+                  ))
+                )}
+
+                <div className="rounded-2xl border border-slate-100 bg-slate-50 p-5">
+                  <dt className="text-sm font-bold text-slate-900 mb-3">軟體功能</dt>
+                  <dd className="flex flex-wrap gap-2">
+                    {product.softwareFunctions.map((item) => (
+                      <span key={item} className="px-3 py-1 rounded-full bg-white text-slate-600 text-xs font-semibold border border-slate-100">
+                        {item}
+                      </span>
+                    ))}
+                  </dd>
+                </div>
+              </dl>
+
+              <a
+                href={`mailto:contact@hxt-tech.com?subject=${encodeURIComponent(`詢問 ${product.model}`)}`}
+                className="mt-6 inline-flex w-full md:w-auto items-center justify-center text-white bg-brand-blue px-7 py-4 rounded-full font-bold hover:bg-brand-blue/90 hover:shadow-lg hover:shadow-brand-blue/20 transition-all"
+              >
+                聯絡詢價
+                <span className="ml-2">→</span>
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
-      <div className="p-6 flex flex-col flex-1">
-        <span className="text-xs font-bold text-brand-blue tracking-widest uppercase mb-3">
-          {accessory.type}
-        </span>
-        <h3 className="text-2xl font-black text-slate-900 mb-3">{accessory.model}</h3>
-        <p className="text-sm text-slate-600 leading-relaxed mb-6">
-          {accessory.description}
-        </p>
-        <a
-          href={`mailto:contact@hxt-tech.com?subject=${encodeURIComponent(`詢問 ${accessory.model}`)}`}
-          className="mt-auto inline-flex items-center justify-center text-white bg-brand-blue px-5 py-3 rounded-full font-semibold hover:bg-brand-blue/90 hover:shadow-lg hover:shadow-brand-blue/20 transition-all"
-        >
-          聯絡詢價
-          <span className="ml-2">→</span>
-        </a>
-      </div>
-    </article>
+    </div>
   );
 }
 
 export default function AcousticsTest() {
   const location = useLocation();
+  const [activeCategory, setActiveCategory] = useState(productGroups[0].id);
+  const [selectedProduct, setSelectedProduct] = useState(null);
   useEffect(() => window.scrollTo(0, 0), [location.pathname]);
+
+  const activeGroup = productGroups.find((group) => group.id === activeCategory) ?? productGroups[0];
 
   const features = [
     { title: '單體麥克風檢測', desc: '提供高精度的頻率響應、靈敏度與總諧波失真 (THD) 量測，精準把關上游零件。' },
@@ -148,7 +292,7 @@ export default function AcousticsTest() {
 
       <section className="bg-white py-24 px-6">
         <div className="max-w-7xl mx-auto">
-          <div className="max-w-3xl mb-14">
+          <div className="max-w-3xl mb-10">
             <div className="text-brand-blue font-bold tracking-widest mb-4 uppercase text-sm">
               Product Series
             </div>
@@ -160,52 +304,57 @@ export default function AcousticsTest() {
             </p>
           </div>
 
-          <div className="space-y-20">
-            {productCategories.map((category) => (
-              <section key={category.title}>
-                <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-8">
-                  <div>
-                    <h3 className="text-2xl md:text-3xl font-black text-slate-900 mb-2">
-                      {category.title}
-                    </h3>
-                    <p className="text-slate-500">
-                      {category.products.length} 項產品
-                    </p>
-                  </div>
-                </div>
+          <div className="sticky top-16 z-20 bg-white/95 backdrop-blur border-y border-slate-100 -mx-6 px-6 py-4 mb-10">
+            <div className="max-w-7xl mx-auto overflow-x-auto">
+              <div className="flex gap-2 min-w-max">
+                {productGroups.map((group) => {
+                  const isActive = activeCategory === group.id;
 
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-                  {category.products.map((product) => (
-                    <ProductCard key={product.id} product={product} />
-                  ))}
-                </div>
-              </section>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="py-24 px-6 bg-slate-50">
-        <div className="max-w-7xl mx-auto">
-          <div className="max-w-3xl mb-14">
-            <div className="text-brand-blue font-bold tracking-widest mb-4 uppercase text-sm">
-              Test Chamber / Shielding Box
+                  return (
+                    <button
+                      type="button"
+                      key={group.id}
+                      onClick={() => setActiveCategory(group.id)}
+                      className={`h-12 min-w-[170px] px-5 rounded-full border text-sm font-bold transition-all duration-200 ${
+                        isActive
+                          ? 'bg-brand-blue text-white border-brand-blue shadow-lg shadow-brand-blue/15'
+                          : 'bg-white text-slate-600 border-slate-200 hover:border-brand-blue/30 hover:text-brand-blue'
+                      }`}
+                    >
+                      <span>{group.label}</span>
+                      <span className={`ml-2 ${isActive ? 'text-white/70' : 'text-slate-400'}`}>
+                        {group.products.length}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-            <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-5 tracking-tight">
-              相關測試箱體與屏蔽箱
-            </h2>
-            <p className="text-lg text-slate-600 leading-relaxed">
-              搭配麥克風測試系統使用的測試箱體、音源與屏蔽箱，可依使用者應用情境整合，客製化治具另行配置。
-            </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-            {accessoryProducts.map((accessory) => (
-              <AccessoryCard key={accessory.id} accessory={accessory} />
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-8">
+            <div>
+              <h3 className="text-3xl md:text-4xl font-black text-slate-900 mb-3">
+                {activeGroup.label}
+              </h3>
+              <p className="text-slate-600 max-w-3xl leading-relaxed">
+                {activeGroup.description}
+              </p>
+            </div>
+            <div className="text-sm font-bold text-brand-blue bg-slate-50 border border-slate-100 rounded-full px-4 py-2 w-fit">
+              {activeGroup.products.length} 項產品
+            </div>
+          </div>
+
+          <div key={activeGroup.id} className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 transition-all duration-200">
+            {activeGroup.products.map((product) => (
+              <ProductCard key={`${product.sourceCategory}-${product.id}`} product={product} onSelect={setSelectedProduct} />
             ))}
           </div>
         </div>
       </section>
+
+      <SpecModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />
     </div>
   );
 }
