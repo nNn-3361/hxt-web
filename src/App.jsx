@@ -8,7 +8,6 @@ import ContactCTA from './components/ContactCTA';
 import Benefits from './pages/Benefits';
 import CompanyProfile from './pages/CompanyProfile';
 import CompanyInfo from './pages/CompanyInfo';
-import CompanySystem from './pages/CompanySystem';
 import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 // 加入這兩行
@@ -96,8 +95,7 @@ function Navbar() {
     careers: {
       title: '人才招募',
       links: [
-        { name: '公司福利', href: '/careers/benefits' },
-        { name: '公司制度', href: '/careers/system' },
+        { name: '公司福利與制度', href: '/careers/benefits' },
         { name: '加入HXT', href: '/careers/join' },
       ]
     }
@@ -111,8 +109,7 @@ function Navbar() {
     { id: 5, title: '麥克風測試產品系列', category: '產品與服務', path: '/products/acoustics', desc: 'CMT、LMT、MT 系列麥克風測試系統，以及 ACH 測試箱體與 AMT 屏蔽箱。', keywords: microphoneSearchKeywords },
     { id: 2, title: '企業簡介', category: '關於我們', path: '/about/company', desc: '宏相科技成立於 2005 年，提供全方位的開發能力與高標準測試。', keywords: ['關於我們', '企業簡介', '歷史', '理念', '宏相科技', 'hxt', '昆山', '介紹'] },
     { id: 6, title: '公司基本資料', category: '關於我們', path: '/about/info', desc: '公司名稱、負責人、企業沿革、辦公室地理位置等基本資料。', keywords: ['公司基本資料', '基本資料', '負責人', '沿革', '企業沿革', '地址', '辦公室', '地理位置', '統一編號'] },
-    { id: 3, title: '公司福利', category: '人才招募', path: '/careers/benefits', desc: '提供優於業界的福利與彈性工時，重視每一位團隊夥伴。', keywords: ['福利', '薪資', '薪酬', '招募', '加入', '假勤', '健康檢查', '零食', 'careers'] },
-    { id: 7, title: '公司制度', category: '人才招募', path: '/careers/system', desc: '工作制度、假勤制度、績效升遷、教育訓練與制度文件框架。', keywords: ['公司制度', '制度', '工作制度', '假勤制度', '績效', '升遷', '教育訓練', '員工手冊', '申請表單', '規範'] },
+    { id: 3, title: '公司福利與制度', category: '人才招募', path: '/careers/benefits', desc: '福利制度、保險保障、獎金禮品與學習補助資訊。', keywords: ['福利', '公司制度', '制度', '工作制度', '假勤制度', '特休', '陪產假', '產假', '保險', '勞保', '健保', '團保', '職災保險', '員工體檢', '獎金', '年終', '年節', '三節', '績效', '加班費', '教育訓練', '進修', '聚餐', '旅遊', '結婚補助', '生育補助', '喪葬補助', 'careers'] },
     { id: 4, title: '加入 HXT', category: '人才招募', path: '/careers/join', desc: '目前暫無公開職缺，未來招募資訊將在此更新。', keywords: ['職缺', '工作', '招募', '徵才', '應徵', '面試'] },
   ];
 
@@ -376,7 +373,7 @@ export default function App() {
               
               {/* 其他預留空頁面可自行刪減或保留 */}
               <Route path="/about/info" element={<CompanyInfo />} />
-              <Route path="/careers/system" element={<CompanySystem />} />
+              <Route path="/careers/system" element={<Benefits />} />
             </Routes>
           </main>
 

@@ -1,6 +1,25 @@
 import { useEffect, useRef } from 'react';
 
+class Particle {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.vx = (Math.random() - 0.5) * 1.5;
+    this.vy = -(Math.random() * 3 + 2);
+    this.life = 1;
+    this.decay = Math.random() * 0.02 + 0.01;
+    this.size = Math.random() * 2 + 1;
+  }
+
+  update() {
+    this.x += this.vx;
+    this.y += this.vy;
+    this.life -= this.decay;
+  }
+}
+
 export default function HeroCanvas() {
+  const heroRef = useRef(null);
   const canvasRef = useRef(null);
   const textRef = useRef(null);
   const fogRef = useRef(null);
@@ -8,14 +27,18 @@ export default function HeroCanvas() {
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
-    let animationFrameId;
+    let animationFrameId = null;
+    let scrollFrameId = null;
     let time = 0;
     let particles = [];
+    let isHeroVisible = true;
+    let isPageVisible = !document.hidden;
     
     const interaction = { x: -1000, y: -1000, clicked: false, clickTime: 0 }; 
 
     // --- 捲動過渡特效邏輯 ---
-    const handleScroll = () => {
+    const updateScrollEffects = () => {
+      scrollFrameId = null;
       const scrollY = window.scrollY;
       const vh = window.innerHeight;
       
@@ -30,23 +53,26 @@ export default function HeroCanvas() {
 
       if (fogRef.current) {
         fogRef.current.style.opacity = progress;
-        const blurValue = progress * 20; 
+        const blurValue = progress * 12; 
         fogRef.current.style.backdropFilter = `blur(${blurValue}px)`;
         fogRef.current.style.WebkitBackdropFilter = `blur(${blurValue}px)`;
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
-    handleScroll();
+    const handleScroll = () => {
+      if (scrollFrameId) return;
+      scrollFrameId = requestAnimationFrame(updateScrollEffects);
+    };
 
     // --- Canvas 尺寸與滑鼠事件 ---
     const handleResize = () => {
-      const dpr = window.devicePixelRatio || 1; 
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5); 
       canvas.width = window.innerWidth * dpr;
       canvas.height = window.innerHeight * dpr;
       ctx.scale(dpr, dpr);
       canvas.style.width = `${window.innerWidth}px`;
       canvas.style.height = `${window.innerHeight}px`;
+      handleScroll();
     };
 
     const handleMouseMove = (e) => {
@@ -65,31 +91,6 @@ export default function HeroCanvas() {
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseout', handleMouseOut);
     window.addEventListener('mousedown', handleMouseDown);
-    
-    // --- 向上蒸發的粒子類別 ---
-    class Particle {
-      constructor(x, y) {
-        this.x = x;
-        this.y = y;
-        this.vx = (Math.random() - 0.5) * 1.5;
-        this.vy = - (Math.random() * 3 + 2); 
-        this.life = 1;
-        this.decay = Math.random() * 0.02 + 0.01; 
-        this.size = Math.random() * 2 + 1;
-      }
-      update() {
-        this.x += this.vx;
-        this.y += this.vy;
-        this.life -= this.decay;
-      }
-      draw() {
-        ctx.fillStyle = `rgba(0, 229, 255, ${this.life * 0.8})`;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
-
     // 圓角柱狀圖繪製輔助函式
     const drawRoundRect = (ctx, x, y, width, height, radius) => {
       let r = radius;
@@ -106,11 +107,47 @@ export default function HeroCanvas() {
       ctx.fill();
     };
 
-    handleResize();
-    window.addEventListener('resize', handleResize);
+    const shouldAnimate = () => isHeroVisible && isPageVisible;
+
+    const startAnimation = () => {
+      if (animationFrameId || !shouldAnimate()) return;
+      animationFrameId = requestAnimationFrame(animate);
+    };
+
+    const stopAnimation = () => {
+      if (!animationFrameId) return;
+      cancelAnimationFrame(animationFrameId);
+      animationFrameId = null;
+    };
+
+    const handleVisibilityChange = () => {
+      isPageVisible = !document.hidden;
+      if (shouldAnimate()) {
+        startAnimation();
+      } else {
+        stopAnimation();
+      }
+    };
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isHeroVisible = entry.isIntersecting;
+        if (shouldAnimate()) {
+          startAnimation();
+        } else {
+          stopAnimation();
+        }
+      },
+      { threshold: 0.05 }
+    );
+
+    if (heroRef.current) observer.observe(heroRef.current);
 
     // --- 核心動畫迴圈 ---
     const animate = () => {
+      animationFrameId = null;
+      if (!shouldAnimate()) return;
+
       const rect = canvas.getBoundingClientRect();
       const logicalWidth = rect.width;
       const logicalHeight = rect.height;
@@ -132,11 +169,11 @@ export default function HeroCanvas() {
 
       const centerY = logicalHeight / 2;
       
-      ctx.shadowBlur = 10;
+      ctx.shadowBlur = 6;
       ctx.shadowColor = 'rgba(0, 229, 255, 0.4)'; // 柔和的發光
       ctx.fillStyle = 'rgba(0, 191, 255, 0.6)';
 
-      const numBars = logicalWidth < 768 ? 60 : 140; 
+      const numBars = logicalWidth < 768 ? 48 : 96; 
       const barGap = logicalWidth < 768 ? 2 : 3; 
       const barWidth = (logicalWidth - (numBars - 1) * barGap) / numBars; 
       const barRadius = barWidth / 2; 
@@ -195,27 +232,37 @@ export default function HeroCanvas() {
       for (let i = particles.length - 1; i >= 0; i--) {
         let p = particles[i];
         p.update();
-        p.draw();
+        ctx.fillStyle = `rgba(0, 229, 255, ${p.life * 0.8})`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
         if (p.life <= 0) particles.splice(i, 1);
       }
 
-      animationFrameId = requestAnimationFrame(animate);
+      startAnimation();
     };
     
-    animate();
+    handleResize();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleResize);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    startAnimation();
 
     return () => {
+      observer.disconnect();
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseout', handleMouseOut);
       window.removeEventListener('mousedown', handleMouseDown);
-      cancelAnimationFrame(animationFrameId);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      stopAnimation();
+      if (scrollFrameId) cancelAnimationFrame(scrollFrameId);
     };
   }, []);
 
   return (
-    <div className="relative h-[150vh] w-full bg-white">
+    <div ref={heroRef} className="relative h-[150vh] w-full bg-white">
       <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center justify-center">
         
         <canvas ref={canvasRef} className="absolute inset-0 z-0 pointer-events-auto cursor-crosshair" />
