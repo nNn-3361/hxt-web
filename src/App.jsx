@@ -5,9 +5,10 @@ import CookieBanner from './components/CookieBanner';
 import HeroCanvas from './components/HeroCanvas';
 import ProductShowcase from './components/ProductShowcase';
 import ContactCTA from './components/ContactCTA';
-import PlaceholderPage from './pages/PlaceholderPage';
 import Benefits from './pages/Benefits';
 import CompanyProfile from './pages/CompanyProfile';
+import CompanyInfo from './pages/CompanyInfo';
+import CompanySystem from './pages/CompanySystem';
 import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 // 加入這兩行
@@ -109,8 +110,10 @@ function Navbar() {
     { id: 1, title: '聲學與音訊測試', category: '產品與服務', path: '/products/acoustics', desc: '數位與類比聲音訊號的頂尖測試解決方案。', keywords: ['麥克風', '聲音', '音訊', '聲學', '訊號', 'audio', '單體', 'fpc', '耳機', '喇叭'] },
     { id: 5, title: '麥克風測試產品系列', category: '產品與服務', path: '/products/acoustics', desc: 'CMT、LMT、MT 系列麥克風測試系統，以及 ACH 測試箱體與 AMT 屏蔽箱。', keywords: microphoneSearchKeywords },
     { id: 2, title: '企業簡介', category: '關於我們', path: '/about/company', desc: '宏相科技成立於 2005 年，提供全方位的開發能力與高標準測試。', keywords: ['關於我們', '企業簡介', '歷史', '理念', '宏相科技', 'hxt', '昆山', '介紹'] },
+    { id: 6, title: '公司基本資料', category: '關於我們', path: '/about/info', desc: '公司名稱、負責人、企業沿革、辦公室地理位置等基本資料。', keywords: ['公司基本資料', '基本資料', '負責人', '沿革', '企業沿革', '地址', '辦公室', '地理位置', '統一編號'] },
     { id: 3, title: '公司福利', category: '人才招募', path: '/careers/benefits', desc: '提供優於業界的福利與彈性工時，重視每一位團隊夥伴。', keywords: ['福利', '薪資', '薪酬', '招募', '加入', '假勤', '健康檢查', '零食', 'careers'] },
-    { id: 4, title: '加入 HXT', category: '人才招募', path: '/careers/join', desc: '探索目前的熱門職缺，與頂尖團隊一起成長。', keywords: ['職缺', '工作', '應徵', '面試', '工程師'] },
+    { id: 7, title: '公司制度', category: '人才招募', path: '/careers/system', desc: '工作制度、假勤制度、績效升遷、教育訓練與制度文件框架。', keywords: ['公司制度', '制度', '工作制度', '假勤制度', '績效', '升遷', '教育訓練', '員工手冊', '申請表單', '規範'] },
+    { id: 4, title: '加入 HXT', category: '人才招募', path: '/careers/join', desc: '目前暫無公開職缺，未來招募資訊將在此更新。', keywords: ['職缺', '工作', '招募', '徵才', '應徵', '面試'] },
   ];
 
   // 🚀 實時過濾邏輯：如果沒有輸入，回傳空陣列；如果有輸入，比對標題、敘述或關鍵字
@@ -202,9 +205,10 @@ function Navbar() {
                       <Link 
                         to={link.href} 
                         onClick={closeAllMenus}
-                        className="text-lg text-slate-800 hover:text-brand-blue font-medium transition-colors"
+                        className="group relative inline-flex pb-1 text-lg text-slate-800 hover:text-brand-blue font-medium transition-colors"
                       >
                         {link.name}
+                        <span className="absolute bottom-0 left-0 h-0.5 w-full origin-left scale-x-0 bg-brand-blue transition-transform duration-300 ease-out group-hover:scale-x-100"></span>
                       </Link>
                     </li>
                   ))}
@@ -226,8 +230,9 @@ function Navbar() {
               <ul className="space-y-4">
                 {menu.links.map((link, index) => (
                   <li key={index}>
-                    <Link to={link.href} onClick={closeAllMenus} className="text-2xl font-semibold text-slate-900 hover:text-brand-blue transition-colors">
+                    <Link to={link.href} onClick={closeAllMenus} className="group relative inline-flex pb-1 text-2xl font-semibold text-slate-900 hover:text-brand-blue transition-colors">
                       {link.name}
+                      <span className="absolute bottom-0 left-0 h-0.5 w-full origin-left scale-x-0 bg-brand-blue transition-transform duration-300 ease-out group-hover:scale-x-100"></span>
                     </Link>
                   </li>
                 ))}
@@ -268,26 +273,7 @@ function Navbar() {
           </div>
 
           <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
-            {searchQuery.trim() === '' ? (
-              <div className="grid md:grid-cols-2 gap-12">
-                <div>
-                  <h4 className="text-xs font-bold text-slate-400 mb-6 tracking-widest uppercase">熱門搜尋</h4>
-                  <ul className="space-y-4">
-                    <li><Link to="/products/acoustics" onClick={closeAllMenus} className="text-xl font-semibold text-slate-600 hover:text-brand-blue transition-colors flex items-center gap-2"><span className="text-brand-blue">↗</span> CMT 麥克風測試系統</Link></li>
-                    <li><Link to="/products/acoustics" onClick={closeAllMenus} className="text-xl font-semibold text-slate-600 hover:text-brand-blue transition-colors flex items-center gap-2"><span className="text-brand-blue">↗</span> ACH / AMT 測試箱體</Link></li>
-                    <li><Link to="/careers/join" onClick={closeAllMenus} className="text-xl font-semibold text-slate-600 hover:text-brand-blue transition-colors flex items-center gap-2"><span className="text-brand-blue">↗</span> 2026 最新職缺</Link></li>
-                  </ul>
-                </div>
-                <div>
-                  <h4 className="text-xs font-bold text-slate-400 mb-6 tracking-widest uppercase">最新消息</h4>
-                  <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100 hover:border-brand-blue/30 transition-colors group cursor-pointer">
-                    <div className="text-brand-blue text-sm font-bold mb-2">新聞稿</div>
-                    <h5 className="text-slate-900 text-lg font-bold mb-2 group-hover:text-brand-blue transition-colors">HXT 發布全新光學對焦檢測算法</h5>
-                    <p className="text-slate-500 text-sm leading-relaxed">大幅提升產線自動化效率達 40%，引領消費性電子檢測新標竿。</p>
-                  </div>
-                </div>
-              </div>
-            ) : (
+            {searchQuery.trim() !== '' && (
               <div>
                 <h4 className="text-xs font-bold text-slate-400 mb-6 tracking-widest uppercase">
                   搜尋結果 ({filteredResults.length})
@@ -319,7 +305,7 @@ function Navbar() {
                 ) : (
                   <div className="text-center py-20 border border-dashed border-slate-200 rounded-3xl">
                     <p className="text-slate-600 text-2xl font-bold mb-3">找不到符合「{searchQuery}」的結果</p>
-                    <p className="text-slate-400">請嘗試使用其他關鍵字，例如「<span className="text-slate-500">影像</span>」、「<span className="text-slate-500">福利</span>」或「<span className="text-slate-500">客製化</span>」</p>
+                    <p className="text-slate-400">請嘗試使用其他關鍵字，例如「<span className="text-slate-500">音訊</span>」、「<span className="text-slate-500">麥克風</span>」、「<span className="text-slate-500">福利</span>」或「<span className="text-slate-500">客製化</span>」</p>
                   </div>
                 )}
               </div>
@@ -389,8 +375,8 @@ export default function App() {
               <Route path="/careers/join" element={<JoinHXT />} />
               
               {/* 其他預留空頁面可自行刪減或保留 */}
-              <Route path="/about/info" element={<PlaceholderPage title="公司基本資料" />} />
-              <Route path="/careers/system" element={<PlaceholderPage title="公司制度" />} />
+              <Route path="/about/info" element={<CompanyInfo />} />
+              <Route path="/careers/system" element={<CompanySystem />} />
             </Routes>
           </main>
 

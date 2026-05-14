@@ -84,9 +84,9 @@ export default function Benefits() {
             <p className="text-slate-600 leading-relaxed mb-6">
               加入我們，在充滿活力的開放式辦公空間中，與頂尖的工程師們一起探索科技的邊界。
             </p>
-            <button className="text-white bg-brand-blue hover:bg-brand-blue/90 px-6 py-3 rounded-full font-bold transition-colors flex items-center gap-2 shadow-lg shadow-brand-blue/20">
-              查看熱門職缺 →
-            </button>
+            <div className="inline-flex text-slate-500 bg-slate-100 px-6 py-3 rounded-full font-bold">
+              目前暫無公開職缺
+            </div>
           </div>
           <div className="w-full md:w-2/3 grid grid-cols-2 gap-4">
             <div className="aspect-[4/3] bg-slate-100 rounded-2xl flex items-center justify-center">

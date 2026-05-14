@@ -8,7 +8,7 @@ export default function SEO({ title, description, image, url }) {
   const fullTitle = title ? `${title} | ${siteName}` : siteName;
   
   // 預設的網站描述
-  const defaultDescription = '宏相科技致力於提供穩固、模組化與高效率的企業級測試解決方案，專精於影像、音訊與自動化系統整合。';
+  const defaultDescription = '宏相科技致力於提供穩固、模組化與高效率的聲學與音訊測試解決方案，協助客戶完成麥克風與音訊產品驗證。';
   const finalDescription = description || defaultDescription;
 
   // 預設的 OG 預覽圖 (未來請換成你們公司真實上傳的圖片網址)

@@ -58,9 +58,9 @@ export default function CompanyProfile() {
 
           {/* 深藍色強調卡片 */}
           <div className="md:col-span-2 bg-brand-blue shadow-xl shadow-brand-blue/20 p-10 rounded-3xl flex flex-col justify-center">
-            <h3 className="text-2xl font-bold text-white mb-4">服務對象涵蓋全球產業</h3>
+            <h3 className="text-2xl font-bold text-white mb-4">專注聲學與音訊測試</h3>
             <p className="text-brand-blue-100 text-white/80 leading-relaxed">
-              我們的解決方案廣泛應用於影像感測器、相機模組、機器視覺、運動控制、LCD Panel、半導體測試等高科技產業鏈。
+              我們目前聚焦於麥克風、音訊模組與相關聲學測試解決方案，協助客戶完成從研發驗證到量產測試的品質把關。
             </p>
           </div>
 
