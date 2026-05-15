@@ -21,10 +21,10 @@ const profileHighlights = [
 ];
 
 const directors = [
-  { role: '董事長 / 負責人', name: '何易璋' },
-  { role: '董事', name: '何怡德' },
-  { role: '董事', name: '方幸宜' },
-  { role: '監察人', name: '彭甄萍' },
+  { label: '董事長 / 負責人', value: '何易璋' },
+  { label: '董事', value: '何怡德' },
+  { label: '董事', value: '方幸宜' },
+  { label: '監察人', value: '彭甄萍' },
 ];
 
 const historyItems = [
@@ -147,25 +147,22 @@ export default function CompanyInfo() {
           </div>
         </section>
 
-        <section>
-          <div className="mb-8">
-            <div className="text-brand-blue font-bold tracking-widest mb-3 uppercase text-sm">
+        <section className="bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
+          <div className="px-6 md:px-8 py-6 border-b border-slate-100">
+            <div className="text-brand-blue font-bold tracking-widest mb-2 uppercase text-sm">
               Governance
             </div>
-            <h2 className="text-3xl md:text-4xl font-black text-slate-900">負責人與董監事</h2>
+            <h2 className="text-3xl font-black text-slate-900">負責人與董監事</h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
-            {directors.map((director) => (
-              <article key={`${director.role}-${director.name}`} className="bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6">
-                <div className="h-12 w-12 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-brand-blue font-black mb-6">
-                  {director.name.slice(0, 1)}
-                </div>
-                <div className="text-sm font-bold text-slate-400 mb-2">{director.role}</div>
-                <h3 className="text-2xl font-black text-slate-900">{director.name}</h3>
-              </article>
+          <dl className="divide-y divide-slate-100">
+            {directors.map((field) => (
+              <div key={`${field.label}-${field.value}`} className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-2 md:gap-8 px-6 md:px-8 py-5">
+                <dt className="text-sm font-bold text-slate-400">{field.label}</dt>
+                <dd className="text-base md:text-lg font-bold text-slate-800 break-words">{field.value}</dd>
+              </div>
             ))}
-          </div>
+          </dl>
         </section>
 
         <section className="grid grid-cols-1 lg:grid-cols-[1fr_1fr] gap-8">

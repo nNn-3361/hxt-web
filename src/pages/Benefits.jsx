@@ -51,7 +51,7 @@ export default function Benefits() {
             公司福利與制度
           </h1>
           <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-            宏相科技重視穩定的工作環境、完整保障與持續成長，透過清楚的福利制度支持每一位團隊成員。
+            宏相科技重視穩定的工作環境、完整保障與持續成長。
           </p>
         </div>
       </div>
