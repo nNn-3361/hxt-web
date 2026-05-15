@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import SEO from '../components/SEO';
 
@@ -57,8 +57,15 @@ const services = [
   '自動化測試系統整合',
 ];
 
+const primaryOfficeAddress = '新竹縣竹北市聯興二街28號';
+const registeredAddress = '新竹縣竹北市嘉豐十一路1段100號12樓之7';
+const encodedPrimaryOfficeAddress = encodeURIComponent(primaryOfficeAddress);
+const googleMapsEmbedUrl = `https://www.google.com/maps?q=${encodedPrimaryOfficeAddress}&output=embed`;
+const googleMapsSearchUrl = `https://www.google.com/maps/search/?api=1&query=${encodedPrimaryOfficeAddress}`;
+
 export default function CompanyInfo() {
   const location = useLocation();
+  const [isMapLoaded, setIsMapLoaded] = useState(false);
   useEffect(() => window.scrollTo(0, 0), [location.pathname]);
 
   return (
@@ -201,25 +208,63 @@ export default function CompanyInfo() {
               </div>
               <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-5">辦公室位置</h2>
               <p className="text-slate-600 leading-relaxed">
-                正式地址資訊確認後，可再補充交通方式、停車資訊與地圖嵌入。
+                宏相科技目前主要辦公室位於新竹縣竹北市，登記地址與主要辦公室地址分列如下。
               </p>
             </div>
 
             <div className="p-8 md:p-10">
-              <div className="mb-8">
-                <div className="text-sm font-bold text-slate-400 mb-2">登記地址</div>
-                <p className="text-lg font-black text-slate-900 leading-relaxed">
-                  新竹縣竹北市嘉豐十一路1段100號12樓之7
-                </p>
-              </div>
-              <div className="rounded-2xl bg-slate-100 border border-slate-200 min-h-[260px] flex flex-col items-center justify-center text-center px-6">
-                <div className="w-14 h-14 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-brand-blue font-black mb-4">
-                  HXT
+              <div className="space-y-6 mb-8">
+                <div>
+                  <div className="text-sm font-bold text-slate-400 mb-2">主要辦公室</div>
+                  <p className="text-lg font-black text-slate-900 leading-relaxed">
+                    {primaryOfficeAddress}
+                  </p>
                 </div>
-                <h3 className="text-xl font-black text-slate-900 mb-3">地圖待正式嵌入</h3>
-                <p className="text-slate-500 max-w-sm leading-relaxed">
-                  地址確認後可在此放置 Google Maps、靜態位置圖或交通資訊。
-                </p>
+                <div>
+                  <div className="text-sm font-bold text-slate-400 mb-2">登記地址</div>
+                  <p className="text-lg font-black text-slate-900 leading-relaxed">
+                    {registeredAddress}
+                  </p>
+                </div>
+              </div>
+              <div className="rounded-2xl bg-slate-100 border border-slate-200 min-h-[320px] overflow-hidden">
+                {isMapLoaded ? (
+                  <iframe
+                    title="宏相科技主要辦公室 Google Maps"
+                    src={googleMapsEmbedUrl}
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    className="w-full min-h-[320px] h-full border-0"
+                    allowFullScreen
+                  />
+                ) : (
+                  <div className="min-h-[320px] flex flex-col items-center justify-center text-center px-6">
+                    <div className="w-14 h-14 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-brand-blue font-black mb-4">
+                      HXT
+                    </div>
+                    <h3 className="text-xl font-black text-slate-900 mb-3">主要辦公室地圖</h3>
+                    <p className="text-slate-500 max-w-sm leading-relaxed mb-6">
+                      點擊後載入 Google Maps，定位至主要辦公室地址。
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setIsMapLoaded(true)}
+                        className="inline-flex items-center justify-center rounded-full bg-brand-blue px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-brand-blue/90"
+                      >
+                        載入地圖
+                      </button>
+                      <a
+                        href={googleMapsSearchUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center justify-center rounded-full bg-white border border-slate-200 px-5 py-3 text-sm font-bold text-slate-600 transition-colors hover:border-brand-blue hover:text-brand-blue"
+                      >
+                        在 Google Maps 開啟
+                      </a>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>

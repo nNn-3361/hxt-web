@@ -70,6 +70,13 @@ function Navbar() {
     setSearchQuery(''); // 關閉時清空搜尋字串
   };
 
+  const openSearch = () => {
+    setIsMobileOpen(false);
+    setActiveMenu(null);
+    setSearchQuery('');
+    setIsSearchOpen(true);
+  };
+
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') closeAllMenus();
@@ -105,13 +112,15 @@ function Navbar() {
 
   // 🚀 建立搜尋資料庫：包含標題、敘述與隱藏的觸發關鍵字
   const searchDatabase = [
-    { id: 1, title: '聲學與音訊測試', category: '產品與服務', path: '/products/acoustics', desc: '數位與類比聲音訊號的頂尖測試解決方案。', keywords: ['麥克風', '聲音', '音訊', '聲學', '訊號', 'audio', '單體', 'fpc', '耳機', '喇叭'] },
+    { id: 1, title: '聲學與音訊測試', category: '產品與服務', path: '/products/acoustics', desc: '數位與類比聲音訊號的頂尖測試解決方案。', keywords: ['麥克風', '聲音', '音訊', '聲學', '訊號', 'audio', '單體', 'fpc', '耳機', '喇叭', '客製化', '客製化測試', '客製化治具', '測試治具', '自動化測試'] },
     { id: 5, title: '麥克風測試產品系列', category: '產品與服務', path: '/products/acoustics', desc: 'CMT、LMT、MT 系列麥克風測試系統，以及 ACH 測試箱體與 AMT 屏蔽箱。', keywords: microphoneSearchKeywords },
     { id: 2, title: '企業簡介', category: '關於我們', path: '/about/company', desc: '宏相科技成立於 2005 年，提供全方位的開發能力與高標準測試。', keywords: ['關於我們', '企業簡介', '歷史', '理念', '宏相科技', 'hxt', '昆山', '介紹'] },
     { id: 6, title: '公司基本資料', category: '關於我們', path: '/about/info', desc: '公司名稱、負責人、企業沿革、辦公室地理位置等基本資料。', keywords: ['公司基本資料', '基本資料', '負責人', '沿革', '企業沿革', '地址', '辦公室', '地理位置', '統一編號'] },
     { id: 3, title: '公司福利與制度', category: '人才招募', path: '/careers/benefits', desc: '福利制度、保險保障、獎金禮品與學習補助資訊。', keywords: ['福利', '公司制度', '制度', '工作制度', '假勤制度', '特休', '陪產假', '產假', '保險', '勞保', '健保', '團保', '職災保險', '員工體檢', '獎金', '年終', '年節', '三節', '績效', '加班費', '教育訓練', '進修', '聚餐', '旅遊', '結婚補助', '生育補助', '喪葬補助', 'careers'] },
     { id: 4, title: '加入 HXT', category: '人才招募', path: '/careers/join', desc: '目前暫無公開職缺，未來招募資訊將在此更新。', keywords: ['職缺', '工作', '招募', '徵才', '應徵', '面試'] },
   ];
+
+  const fallbackSearchSuggestions = ['音訊', '麥克風', '福利', '客製化'];
 
   // 🚀 實時過濾邏輯：如果沒有輸入，回傳空陣列；如果有輸入，比對標題、敘述或關鍵字
   const filteredResults = searchQuery.trim() === '' ? [] : searchDatabase.filter(item => {
@@ -156,7 +165,7 @@ function Navbar() {
           <div className="flex items-center gap-4 relative z-50">
             <div className="relative hidden md:flex items-center">
               <button 
-                onClick={() => setIsSearchOpen(true)}
+                onClick={openSearch}
                 className="flex items-center gap-2 text-sm rounded-full pl-4 pr-5 py-2 outline-none transition-all duration-300 bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-brand-blue"
               >
                 <SearchIcon isSolid={true} />
@@ -166,6 +175,15 @@ function Navbar() {
             
             <button className="text-sm font-medium px-2 transition-colors hidden md:block text-slate-600 hover:text-brand-blue">
               EN
+            </button>
+
+            <button
+              type="button"
+              className="md:hidden p-2 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-brand-blue transition-colors focus:outline-none"
+              onClick={openSearch}
+              aria-label="搜尋"
+            >
+              <SearchIcon isSolid={true} />
             </button>
             
             <button 
@@ -302,7 +320,19 @@ function Navbar() {
                 ) : (
                   <div className="text-center py-20 border border-dashed border-slate-200 rounded-3xl">
                     <p className="text-slate-600 text-2xl font-bold mb-3">找不到符合「{searchQuery}」的結果</p>
-                    <p className="text-slate-400">請嘗試使用其他關鍵字，例如「<span className="text-slate-500">音訊</span>」、「<span className="text-slate-500">麥克風</span>」、「<span className="text-slate-500">福利</span>」或「<span className="text-slate-500">客製化</span>」</p>
+                    <div className="flex flex-wrap items-center justify-center gap-2 text-slate-400">
+                      <span>請嘗試使用其他關鍵字，例如</span>
+                      {fallbackSearchSuggestions.map((suggestion) => (
+                        <button
+                          key={suggestion}
+                          type="button"
+                          onClick={() => setSearchQuery(suggestion)}
+                          className="rounded-full bg-slate-50 border border-slate-200 px-3 py-1 text-sm font-bold text-slate-500 transition-colors hover:border-brand-blue hover:text-brand-blue"
+                        >
+                          {suggestion}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
